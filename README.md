@@ -7,6 +7,8 @@ history of what happened live in the same network, and a question is an activati
 
 Website: [sinapsidb.14bodhi.com](https://sinapsidb.14bodhi.com)
 
+<p align="center"><img src="docs/immagini/rete-fatture.svg" width="440" alt="A threshold network with four clue neurons, Ada, Ben, Monday and Tuesday, and three invoice neurons. Each invoice fires when both its customer and its day are switched on: Ada and Tuesday fire invoice 104."></p>
+
 **Status: experimental, version 0.10.7.** This is a research project, not a database to put in production. It runs
 on one machine with one writer at a time, keeps the whole network in memory unless you move it to disk, and its web
 portal has no login of its own. The documentation and the code comments are in Italian.
@@ -30,6 +32,10 @@ portal has no login of its own. The documentation and the code comments are in I
 
   It says which neurons to switch on (`accendi`), in which facts (`in`) and what to read (`leggi`), also over
   several steps (`poi`). The engine answers and says how it answered. See [docs/lingua.md](docs/lingua.md).
+
+## How it works
+
+<p align="center"><img src="docs/immagini/come-funziona.svg" width="678" alt="Six drawings. A fact fires when enough of its inputs are active. A query follows a path from a product to its buyers. The journal only appends: a correction names the fact it replaces. Only the blocks a query touches are loaded from disk. Every decision says why: a 900 euro order with 500 euros of credit left is refused, and the refusal keeps both numbers. A question is a short sentence in SinapsiDB's own language."></p>
 
 ## What is in this release
 
@@ -87,18 +93,25 @@ too.
 Redis can be added as a third system. It is a **cache of answers prepared in advance**: it does not answer
 questions, it returns what was stored under a key. The page shows what preparing it costs.
 
-On one development machine, with one million records, median times (22–23 November 2026):
+On one Linux machine with 8 GB of RAM, with 1,001,658 records: SinapsiDB 0.10.5 with the C nucleus, PostgreSQL
+17.12 and Redis 8.0.2, 23 November 2026, median of 300 runs per question. Every answer was checked against
+PostgreSQL's before timing, with no mismatch.
 
-- **Questions that start from a named thing** (an invoice number, a customer, a product): SinapsiDB answered 13 of
-  15 faster than PostgreSQL as seen by the calling program, from 4 to 15 times. The time to find an invoice by
-  number does not grow with the data: 2.6 µs with 300,000 records, 2.7 µs with a million.
-- **Questions with no starting point** (revenue month by month over all invoices, invoices above an amount):
-  PostgreSQL won both at first. Values kept in order and the optional C nucleus have since closed the gap on this
-  machine. At ten million records, measured before those two changes, PostgreSQL was up to 17 times faster on them.
-- **Redis**, inside its own server, is the fastest of the three: under a microsecond for most questions. As seen by
-  the program, SinapsiDB was fastest in 12 of 15, because it answers inside the same process while Redis is a round
-  trip away.
+<p align="center"><img src="docs/immagini/velocita.svg" width="640" alt="Which database answers faster? Median time to the application: SinapsiDB 7.0 µs, PostgreSQL 50.9 µs, Redis cache 38.4 µs. SinapsiDB was faster than PostgreSQL on 15 of 15 queries, 7.5 times as a geometric mean, and faster than the Redis cache on 12 of 15, 3.1 times. Inside its own server the Redis cache takes 0.5 µs and is faster on 15 of 15."></p>
+
+- **As seen by the calling program**, SinapsiDB answered all 15 questions faster than PostgreSQL, 7.5 times as a
+  geometric mean of the per-question ratios, and 12 of 15 faster than the Redis cache, 3.1 times.
+- **Redis wins three**: who bought a product (three steps), revenue month by month, invoices above an amount.
+- **Inside its own server Redis is the fastest of the three**: 0.5 µs, ahead on all 15. As seen by the program
+  SinapsiDB is ahead because it answers inside the same process, while Redis is a round trip away and returns
+  answers prepared in advance: 460,899 keys, built in 23 seconds.
+- **The time to find an invoice by number does not grow with the data**: 2.6 µs with 300,000 records, 2.7 µs with a
+  million, in an earlier run.
+- **Ten million records** are still to be measured with the C nucleus. Before it, PostgreSQL was up to 17 times
+  faster on the questions with no starting point.
 - **The price is memory**: about 430 MB for a million records, against the 135 MB that PostgreSQL takes on disk.
+
+<p align="center"><img src="docs/immagini/domande.svg" width="640" alt="Median time to the application for each of the fifteen questions, on a logarithmic scale from 1 µs to 100 ms, for SinapsiDB, PostgreSQL and the Redis cache, with the fastest system and its time for each question."></p>
 
 These are numbers from one machine, not a claim. The questions that PostgreSQL or Redis win stay in the comparison.
 How it is measured, all the tables, what the numbers do not say and how to reproduce them:
