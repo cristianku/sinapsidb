@@ -1,0 +1,43 @@
+[project]
+name = "sinapsidb"
+version = "0.10.7"
+description = "SinapsiDB: an experimental database where every fact is a threshold neuron. Engine, query language, and a local portal with a credit-limit example and a benchmark against PostgreSQL and Redis."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "cristianku" }]
+requires-python = ">=3.11"
+dependencies = [
+    "anyio>=4.16",
+    "starlette>=1.10",
+    "uvicorn>=0.31.1",
+]
+
+[project.urls]
+Homepage = "https://sinapsidb.14bodhi.com"
+Source = "https://github.com/cristianku/sinapsidb"
+
+[project.optional-dependencies]
+# I clienti di PostgreSQL e di Redis servono solo al confronto del portale: senza, il resto funziona.
+# hiredis è il lettore in C del cliente di Redis: senza, Redis nel confronto parte svantaggiato.
+confronto = ["psycopg[binary]>=3.2", "redis[hiredis]>=5"]
+# httpx2 serve al cliente di prova di Starlette, usato dai test del portale.
+dev = ["pytest>=8", "httpx2", "psycopg[binary]>=3.2", "redis[hiredis]>=5"]
+
+[project.scripts]
+sinapsidb-portale = "sinapsidb.portale:main"
+sinapsidb-dati-prova = "sinapsidb.dati_prova:main"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"sinapsidb.statici" = ["*.html", "*.css", "*.js", "*.svg", "*.json"]
+"sinapsidb" = ["nucleo.c"]  # il sorgente del nucleo compilato: si compila sulla macchina, se c'è un compilatore
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

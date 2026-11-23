@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+# il nucleo compilato: si compila sulla macchina, non si tiene nel repository
+_nucleo.so
+_nucleo.so.nuova

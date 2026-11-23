@@ -1,0 +1,143 @@
+/* Pagina del confronto: usa i colori e i componenti di portale.css. SinapsiDB è sempre la prima serie, PostgreSQL la
+   seconda, Redis la terza: il colore segue il sistema, anche quando Redis nel confronto non c'è. */
+:root { --bottone: #1f5fb0; --su-bottone: #ffffff; --serie-3: #1baf7a; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bottone: #2466b8; --serie-3: #199e70; }
+}
+:root[data-theme="dark"] { --bottone: #2466b8; --serie-3: #199e70; }
+
+.testata .tema { margin-left: 0; }
+.passi-confronto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 18px 0 14px; }
+.passo-largo { grid-column: 1 / -1; }
+@media (max-width: 760px) { .passi-confronto { grid-template-columns: minmax(0, 1fr); } }
+.blocco-stato { margin-top: 10px; font-size: 13px; }
+.blocco-stato dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 0; margin: 0; }
+.blocco-stato dt { color: var(--testo-2); padding-right: 12px; }
+.blocco-stato dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.blocco-stato .messaggio { display: flex; gap: 6px; align-items: flex-start; color: var(--testo-2); overflow-wrap: anywhere; }
+
+/* quanti record ci sono in PostgreSQL: il totale in grande, poi tabella per tabella */
+.totale-pg { font-size: 26px; font-weight: 600; line-height: 1.2; margin: 0; font-variant-numeric: tabular-nums; }
+.totale-pg .unita { font-size: 14px; font-weight: 400; color: var(--testo-2); margin-left: 6px; }
+.tabelle-pg { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0 28px; margin: 10px 0 2px; padding: 0; list-style: none; }
+.tabelle-pg li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border-bottom: 1px solid var(--griglia); }
+.tabelle-pg .nome { color: var(--testo-2); }
+.tabelle-pg .quante { font-variant-numeric: tabular-nums; }
+
+.comandi { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center; }
+.comandi button, .comandi select {
+  font: inherit; font-weight: 600; border-radius: 8px; padding: 7px 14px; cursor: pointer;
+  color: var(--testo); background: var(--superficie); border: 1px solid var(--bordo);
+}
+.comandi select { font-weight: 400; font-variant-numeric: tabular-nums; }
+.comandi label { color: var(--testo-2); font-size: 13px; }
+.comandi button.primario { color: var(--su-bottone); background: var(--bottone); border-color: var(--bottone); }
+.comandi button.conferma { border-color: var(--critico); background: var(--superficie); color: var(--testo); }
+.comandi button:disabled, .comandi select:disabled { opacity: 0.5; cursor: default; }
+#nota-genera { margin: 8px 0 0; }
+
+.lavoro[hidden] { display: none; }
+/* Finché un lavoro è in corso la sua riga resta in vista in fondo allo schermo, ovunque si sia nella pagina:
+   chi ha premuto un pulsante in alto e poi scorre vede sempre a che punto è. Finito il lavoro torna al suo posto. */
+.lavoro.in-corso {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; z-index: 20; margin: 0;
+  width: min(760px, calc(100% - 24px)); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22); border-color: var(--serie-1);
+}
+.lavoro.in-corso p { align-items: flex-start; }
+.lavoro.in-corso progress { height: 8px; }
+/* lo spazio per non coprire il fondo della pagina mentre la riga è lì */
+body:has(.lavoro.in-corso) main { padding-bottom: 96px; }
+.lavoro { border: 1px solid var(--bordo); border-radius: 10px; padding: 8px 12px; margin: 0 0 14px; background: var(--superficie); }
+.lavoro p { margin: 0; display: flex; gap: 8px; align-items: center; }
+.lavoro progress { width: 100%; height: 6px; margin-top: 8px; border: 0; border-radius: 3px; background: var(--griglia); accent-color: var(--serie-1); }
+.lavoro progress::-webkit-progress-bar { background: var(--griglia); border-radius: 3px; }
+.lavoro progress::-webkit-progress-value { background: var(--serie-1); border-radius: 3px; }
+.lavoro progress::-moz-progress-bar { background: var(--serie-1); border-radius: 3px; }
+.note { margin: 8px 0 0; padding-left: 20px; color: var(--testo-2); max-width: 100ch; }
+.note li { margin-bottom: 6px; }
+
+#tabella-confronto td, #tabella-confronto th, #tabella-rapporti td, #tabella-rapporti th { white-space: normal; vertical-align: top; }
+#tabella-confronto td.num { white-space: nowrap; }
+.domanda-nome { font-weight: 600; display: block; }
+#tabella-confronto td:first-child { min-width: 15rem; }
+.domanda-cosa { color: var(--testo-2); font-size: 12px; display: block; max-width: 44ch; }
+.domanda-segno { color: var(--muto); font-size: 12px; display: block; }
+/* nei riquadri di questa pagina i valori sono frasi brevi: vanno a capo invece di essere troncati */
+#riassunto .valore { white-space: normal; overflow-wrap: anywhere; font-size: 22px; line-height: 1.2; }
+/* i riquadri: con Redis sono sei, due file da tre; senza, quattro in una fila. Sul telefono due per fila */
+#riassunto[data-quanti="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#riassunto[data-quanti="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 760px) { #riassunto[data-quanti] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.chiave-sinapsi { --c: var(--serie-1); }
+.chiave-postgres { --c: var(--serie-2); }
+.chiave-redis { --c: var(--serie-3); }
+#tabella-rapporti td.num { white-space: nowrap; }
+#tabella-rapporti td:first-child { min-width: 12rem; }
+#tabella-rapporti .domanda-cosa { max-width: 36ch; }
+#tipico { margin-top: 10px; }
+/* il tempo di ogni domanda: il nome a sinistra e la pista a destra; sul telefono il nome sopra la pista */
+.domande-grafico { margin: 12px 0 16px; }
+.dom-riga { display: grid; grid-template-columns: minmax(10rem, 17rem) minmax(0, 1fr); gap: 2px 14px; align-items: center; padding: 3px 6px; }
+.dom-riga:nth-child(odd):not(:last-child) { background: var(--lavaggio); border-radius: 4px; }
+.dom-nome { font-size: 13px; line-height: 1.25; min-width: 0; }
+.dom-nome .domanda-segno { font-size: 11px; }
+.dom-fuori .dom-nome > span:first-child { color: var(--testo-2); }
+@media (max-width: 760px) { .dom-riga { grid-template-columns: minmax(0, 1fr); } .dom-riga:last-child .dom-nome { display: none; } }
+.pista { display: block; overflow: visible; }
+.griglia { stroke: var(--griglia); stroke-width: 1; }
+.viaggio { stroke-width: 2; stroke-linecap: round; opacity: 0.45; }
+.viaggio-postgres { stroke: var(--serie-2); }
+.viaggio-redis { stroke: var(--serie-3); }
+.segno-pieno { stroke: var(--superficie); stroke-width: 2; }
+.pieno-sinapsi { fill: var(--serie-1); }
+.pieno-postgres { fill: var(--serie-2); }
+.pieno-redis { fill: var(--serie-3); }
+.segno-vuoto { fill: var(--superficie); stroke-width: 2; }
+.vuoto-postgres { stroke: var(--serie-2); }
+.vuoto-redis { stroke: var(--serie-3); }
+.asse text { fill: var(--muto); font-size: 11px; font-variant-numeric: tabular-nums; }
+.legenda-pieno { fill: var(--testo-2); }
+.legenda-vuoto { fill: none; stroke: var(--testo-2); stroke-width: 2; }
+/* sul telefono la frase lunga va a capo: il segno della legenda non si stringe */
+#legenda-domande svg { flex-shrink: 0; }
+.vincitore { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; overflow-wrap: anywhere; white-space: normal; }
+
+/* la casella delle domande */
+.chiedi { margin-bottom: 14px; }
+.nascosta { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.esempi { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 2px; }
+.esempi:empty { display: none; }
+.esempi button {
+  font: inherit; font-size: 12px; color: var(--testo-2); background: var(--superficie); border: 1px solid var(--bordo);
+  border-radius: 999px; padding: 4px 10px; cursor: pointer;
+}
+.esempi button:hover { color: var(--testo); background: var(--lavaggio); }
+#chiedi-modulo { align-items: stretch; }
+#domanda {
+  flex: 1 1 320px; min-width: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.5;
+  color: var(--testo); background: var(--superficie); border: 1px solid var(--bordo); border-radius: 8px; padding: 8px 10px; resize: vertical;
+}
+#domanda:focus-visible, .comandi button:focus-visible, .comandi select:focus-visible, .esempi button:focus-visible { outline: 2px solid var(--serie-1); outline-offset: 2px; }
+#risposta { margin-top: 12px; }
+#risposta:empty { display: none; }
+.esito-domanda { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: baseline; margin: 0 0 6px; }
+.esito-domanda .tempo { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.piano { margin: 0 0 8px; padding-left: 20px; color: var(--testo-2); font-size: 13px; max-width: 110ch; }
+#risposta .scorri { max-height: 360px; overflow-y: auto; }
+#risposta td { white-space: normal; overflow-wrap: anywhere; }
+#guida-lingua { margin-top: 12px; }
+button.collegamento { font: inherit; text-align: left; background: none; border: 0; padding: 0; cursor: pointer; color: inherit; }
+button.collegamento:hover code { text-decoration: underline; }
+#vocabolario td { white-space: normal; }
+
+/* Su uno schermo stretto ogni riga diventa una scheda: il nome, poi una riga per ogni misura.
+   Così chi è più rapido si legge senza scorrere di lato. Vale per le domande e per i rapporti. */
+@media (max-width: 760px) {
+  :is(#tabella-confronto, #tabella-rapporti) thead { display: none; }
+  :is(#tabella-confronto, #tabella-rapporti) :is(table, tbody, tr) { display: block; }
+  :is(#tabella-confronto, #tabella-rapporti) tr { padding: 10px 0; border-bottom: 1px solid var(--griglia); }
+  :is(#tabella-confronto, #tabella-rapporti) td { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 0; padding: 2px 0; min-width: 0; }
+  :is(#tabella-confronto, #tabella-rapporti) td:first-child { display: block; min-width: 0; margin-bottom: 4px; }
+  :is(#tabella-confronto, #tabella-rapporti) td[data-nome]::before { content: attr(data-nome); color: var(--testo-2); white-space: normal; }
+}

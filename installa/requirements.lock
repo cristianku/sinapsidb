@@ -1,0 +1,14 @@
+# Dipendenze di SinapsiDB, versioni esatte, quelle con cui sono state fatte le misure (pip freeze, Python 3.13).
+# psycopg è il driver di PostgreSQL, redis e hiredis sono il cliente di Redis: servono solo al confronto del portale.
+# Rigenerare con: python3 -m venv v && v/bin/pip install '.[confronto]' && v/bin/pip freeze --exclude sinapsidb
+anyio==4.16.0
+click==8.5.1
+h11==0.16.0
+hiredis==3.5.0
+idna==3.20
+psycopg==3.3.9
+psycopg-binary==3.3.9
+redis==8.1.0
+starlette==1.10.0
+typing_extensions==4.16.0
+uvicorn==0.54.0

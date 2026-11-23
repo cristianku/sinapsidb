@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SinapsiDB Decisioni</title>
+<link rel="icon" type="image/svg+xml" href="/icona.svg">
+<link rel="stylesheet" href="/portale.css">
+<link rel="stylesheet" href="/confronto.css">
+<link rel="stylesheet" href="/decisioni.css">
+<script src="/tema.js" defer></script>
+<script src="/decisioni.js" defer></script>
+</head>
+<body>
+<div class="viz-root">
+  <header class="testata">
+    <div class="marchio">
+      <img src="/icona.svg" width="40" height="40" alt="">
+      <div>
+        <h1>SinapsiDB <span class="sottile">decisioni</span></h1>
+        <p class="secondario">Una regola sola per leggere il fido, decidere un ordine e riesaminare le decisioni dopo una correzione.</p>
+      </div>
+    </div>
+    <nav class="sezioni" aria-label="Sezioni del portale">
+      <a href="/dati">Dati</a>
+      <a href="/confronto">Confronto</a>
+      <a href="/decisioni" aria-current="page">Decisioni</a>
+    </nav>
+    <button type="button" class="tema" id="tema">Tema</button>
+  </header>
+
+  <main>
+    <p class="avviso" id="avviso" role="status" aria-live="polite" hidden></p>
+
+    <section class="passi-confronto" aria-label="Il fido">
+      <article class="scheda">
+        <h2>1. Scrivi qualcosa</h2>
+        <p class="secondario">È una memoria di prova, separata dai dati veri. Ogni cliente ha un fido: il fido residuo è il fido accordato, meno gli ordini, più i pagamenti. Un ordine che lo manderebbe sotto zero viene rifiutato.</p>
+        <form id="modulo" class="modulo">
+          <label for="cliente">Cliente</label>
+          <input id="cliente" name="cliente" type="text" maxlength="60" autocomplete="off" placeholder="Rossi" required>
+          <label for="importo">Importo</label>
+          <input id="importo" name="importo" type="text" inputmode="decimal" maxlength="24" autocomplete="off" placeholder="1000" required>
+          <label for="vale-da">Vale da <span class="facoltativo">(solo per un pagamento; vuoto: da adesso)</span></label>
+          <input id="vale-da" name="vale_da" type="date">
+          <div class="comandi">
+            <button type="submit" data-op="accorda">Accorda il fido</button>
+            <button type="submit" data-op="ordine" class="primario">Chiedi un ordine</button>
+            <button type="submit" data-op="pagamento">Registra un pagamento</button>
+          </div>
+        </form>
+        <div class="comandi separati">
+          <button type="button" id="esempio">Prova l'esempio</button>
+          <button type="button" id="azzera">Azzera questa memoria</button>
+        </div>
+        <p class="secondario" id="nota-esempio">L'esempio: 800 di fido, un ordine da 1.000 rifiutato, poi un pagamento da 400 che vale da ieri. Dopo, riesamina l'ordine rifiutato.</p>
+        <div id="esito" class="esito-scrittura" role="status" aria-live="polite"></div>
+      </article>
+
+      <article class="scheda">
+        <h2>2. Il fido, adesso</h2>
+        <p class="secondario">È tenuto pronto: lo stesso passo che scrive un ordine o un pagamento lo aggiorna. Chi legge non ricalcola niente.</p>
+        <div class="scorri" id="clienti"></div>
+        <div id="sotto" class="blocco-stato"></div>
+      </article>
+    </section>
+
+    <section class="scheda" aria-labelledby="titolo-decisioni">
+      <h2 id="titolo-decisioni">3. Le decisioni</h2>
+      <p class="secondario">Ogni richiesta lascia scritto com'è finita e che cosa ha guardato, anche quando è un no. Scegli una decisione e riesaminala: dimmi quali scritture successive devo considerare già note, e ti dico che cosa avrei deciso. La decisione di allora resta com'è.</p>
+      <div id="decisioni"></div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SinapsiDB Confronto</title>
+<link rel="icon" type="image/svg+xml" href="/icona.svg">
+<link rel="stylesheet" href="/portale.css">
+<link rel="stylesheet" href="/confronto.css">
+<script src="/tema.js" defer></script>
+<script src="/confronto.js" defer></script>
+</head>
+<body>
+<div class="viz-root">
+  <header class="testata">
+    <div class="marchio">
+      <img src="/icona.svg" width="40" height="40" alt="">
+      <div>
+        <h1>SinapsiDB <span class="sottile">confronto</span></h1>
+        <p class="secondario">Le stesse domande a PostgreSQL, a Redis e a SinapsiDB, sugli stessi dati di un'azienda di prova.</p>
+      </div>
+    </div>
+    <nav class="sezioni" aria-label="Sezioni del portale">
+      <a href="/dati">Dati</a>
+      <a href="/confronto" aria-current="page">Confronto</a>
+      <a href="/decisioni">Decisioni</a>
+    </nav>
+    <button type="button" class="tema" id="tema">Tema</button>
+  </header>
+
+  <main>
+    <section class="passi-confronto" aria-label="Preparazione">
+      <article class="scheda passo-largo">
+        <h2>1. PostgreSQL: l'azienda di prova</h2>
+        <p class="secondario">Un'azienda inventata che vende strumenti musicali e ricambi: clienti e agenti, fornitori e prodotti, magazzini, ordini, spedizioni, fatture, pagamenti, resi, acquisti, movimenti di magazzino, assistenza. I dati sono a caso e cambiano a ogni generazione.</p>
+        <div id="stato-pg" class="blocco-stato"></div>
+        <div class="comandi">
+          <label for="taglia">Quanti record generare</label>
+          <select id="taglia"></select>
+          <button type="button" id="genera" class="primario">Genera i dati in PostgreSQL</button>
+        </div>
+        <p class="secondario" id="nota-genera">Generare sostituisce i dati che ci sono e svuota la rete di prova di SinapsiDB.</p>
+      </article>
+      <article class="scheda">
+        <h2>2. Rete di prova di SinapsiDB</h2>
+        <p class="secondario">Una rete a parte, solo per questo confronto. Ogni riga di PostgreSQL diventa un fatto. Azzerarla non tocca nient'altro. Può stare tutta in memoria, oppure sul disco con in memoria solo quello che serve: è la stessa rete e dà le stesse risposte.</p>
+        <div id="stato-sinapsi" class="blocco-stato"></div>
+        <div class="comandi">
+          <button type="button" id="importa" class="primario">Importa da PostgreSQL</button>
+          <button type="button" id="azzera">Azzera la rete di prova</button>
+          <button type="button" id="dove">Tieni in memoria solo quello che serve</button>
+        </div>
+      </article>
+      <article class="scheda">
+        <h2>3. Redis: la cache delle risposte preparate prima</h2>
+        <p class="secondario">Redis non risponde a domande: è una cache, e restituisce quello che gli è stato messo sotto una chiave. Qui gli si prepara, leggendo PostgreSQL, la risposta di ognuna delle domande del confronto per ogni valore possibile. È una copia: va rifatta quando i dati cambiano.</p>
+        <div id="stato-redis" class="blocco-stato"></div>
+        <div class="comandi">
+          <button type="button" id="redis" class="primario">Prepara le risposte in Redis</button>
+          <button type="button" id="svuota">Togli le risposte da Redis</button>
+        </div>
+      </article>
+      <article class="scheda passo-largo">
+        <h2>4. Confronto</h2>
+        <p class="secondario">Fa ogni domanda prima a PostgreSQL e poi a SinapsiDB, controlla che le risposte siano uguali e misura i tempi. Se in Redis ci sono le risposte pronte di questi stessi dati, le domande vanno anche a lui, con lo stesso controllo.</p>
+        <div id="stato-confronto" class="blocco-stato"></div>
+        <div class="comandi">
+          <button type="button" id="misura" class="primario">Lancia il confronto</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- Il lavoro in corso: sta subito sotto i pulsanti che lo lanciano e, finché dura, resta in vista in fondo allo schermo. -->
+    <div class="lavoro" id="lavoro" role="status" aria-live="polite" hidden>
+      <p id="lavoro-testo"></p>
+      <progress id="lavoro-barra" max="1" value="0" hidden></progress>
+    </div>
+
+    <section class="scheda larga chiedi" aria-labelledby="chiedi-titolo">
+      <h2 id="chiedi-titolo">5. Fai una domanda alla rete di prova</h2>
+      <p class="secondario">Scritta nella lingua di SinapsiDB: quali neuroni accendere, in quali fatti, che cosa leggere. Niente SQL e nessun modello linguistico. Tocca un esempio per provarlo, poi cambialo.</p>
+      <div class="esempi" id="esempi" aria-label="Domande d'esempio"></div>
+      <form id="chiedi-modulo" class="comandi">
+        <label for="domanda" class="nascosta">La domanda</label>
+        <textarea id="domanda" rows="2" spellcheck="false" autocomplete="off" placeholder="accendi cliente = C00001 in fattura emessa leggi fattura, totale"></textarea>
+        <button type="submit" id="chiedi" class="primario">Chiedi</button>
+      </form>
+      <div id="risposta" aria-live="polite"></div>
+      <details id="guida-lingua">
+        <summary>Come si scrive una domanda, e che cosa c'è nella rete</summary>
+        <ul class="note">
+          <li><code>accendi ruolo = nome in tipo di fatto leggi ruolo, ruolo</code>: accende un neurone e legge i fatti che lo ricevono. Con <code>e</code> si accendono più neuroni insieme: scattano solo i fatti che li ricevono tutti.</li>
+          <li><code>poi in tipo di fatto leggi …</code>: prosegue dai neuroni appena letti. Con <code>leggi distinti</code> ogni risposta esce una volta sola.</li>
+          <li><code>conta</code>, <code>somma ruolo</code>, e <code>per ruolo</code> o <code>per mese(ruolo)</code> per raggruppare. <code>dove ruolo &gt; numero</code> mette una condizione.</li>
+          <li>Senza <code>in</code> gli indizi valgono per i fatti di qualsiasi tipo. <code>tipo</code> e <code>frase</code> si possono leggere sempre: la frase è quella con cui il fatto è stato raccontato.</li>
+          <li>Un nome che contiene una parola della lingua (per esempio «in lavorazione») va tra virgolette. <code>vocabolario</code> elenca tipi e ruoli; <code>percorsi da ruolo a ruolo</code> propone le strade tra due cose.</li>
+        </ul>
+        <div id="vocabolario"></div>
+      </details>
+    </section>
+
+    <section id="risultati" hidden>
+      <div class="kpi" id="riassunto"></div>
+
+      <section class="scheda larga" aria-labelledby="rapporti-titolo">
+        <h2 id="rapporti-titolo">Quante volte più rapido</h2>
+        <p class="secondario" id="nota-rapporti"></p>
+        <div id="tabella-rapporti"></div>
+        <p class="secondario" id="tipico"></p>
+      </section>
+
+      <section class="scheda larga" aria-labelledby="domande-titolo">
+        <h2 id="domande-titolo">Tempo per domanda</h2>
+        <p class="secondario" id="nota-domande"></p>
+        <div class="legenda" id="legenda-domande"></div>
+        <div id="grafico-domande"></div>
+        <div id="saltate" class="blocco-stato"></div>
+        <div id="tabella-confronto"></div>
+      </section>
+
+      <section class="scheda larga">
+        <h2>Come leggere questi numeri</h2>
+        <ul class="note">
+          <li>SinapsiDB risponde dentro lo stesso programma che fa la domanda. PostgreSQL è un servizio a parte: la domanda gli arriva dal socket locale e la risposta torna indietro. La colonna «PostgreSQL, solo nel server» toglie quel viaggio e lascia la sola esecuzione: la misura PostgreSQL stesso, su un campione più piccolo, e per questo nelle domande lunghe può scostarsi di poco dal totale.</li>
+          <li>Un tempo vale solo se le risposte coincidono: ogni domanda viene fatta a tutti con gli stessi valori e le risposte si confrontano una per una con quelle di PostgreSQL.</li>
+          <li>Redis qui è una cache: non calcola niente al momento della domanda, restituisce una risposta preparata prima, una struttura per ogni domanda. Per questo è molto rapido anche dove gli altri due devono passare tutte le fatture. In cambio risponde solo alle domande di questo confronto, le risposte vanno rifatte o aggiornate a ogni scrittura (qui non si misura) e costano memoria e tempo in più, quelli scritti nel riquadro «Prezzo della cache». Anche lui è un servizio a parte: «Redis (cache), solo nel server» è il tempo che Redis stesso dichiara per il comando, senza il viaggio, su un campione più piccolo. Dentro il suo server Redis è più rapido di SinapsiDB quasi sempre: SinapsiDB gli passa davanti quando si conta anche il viaggio della risposta, che chi usa Redis paga a ogni domanda.</li>
+          <li id="nota-disco" hidden></li>
+          <li id="nota-nucleo" hidden></li>
+          <li id="nota-via" hidden>In questo confronto Redis è raggiunto da una porta di rete locale, PostgreSQL dal socket: a Redis costa qualche microsecondo in più per domanda.</li>
+          <li id="nota-lettore" hidden>In questo confronto al cliente di Redis mancava il lettore in C: i tempi di Redis visti dal programma sono peggiori del dovuto, soprattutto nelle risposte lunghe.</li>
+          <li>PostgreSQL ha le chiavi, i riferimenti e gli indici che un database ben tenuto avrebbe, e le sue domande sono preparate una volta sola.</li>
+          <li>«Un cliente in un giorno» chiede ordini, fatture e ticket insieme. Nella rete il cliente e il giorno sono già collegati ai fatti che li ricevono tutti e due, di qualsiasi tipo; in SQL servono tre tabelle.</li>
+          <li>Le domande segnate «senza punto di partenza» non nominano nessun neurone da cui partire. Per «Fatturato mese per mese» SinapsiDB deve passare tutte le fatture. Se sulla macchina c'è il nucleo compilato le passa in C, sulle stesse colonne della rete, come PostgreSQL passa le sue righe; se non c'è le passa in Python, e lì ci si aspetta che vinca PostgreSQL, tanto più quanti più dati ci sono. Per «Fatture sopra un importo» SinapsiDB tiene i valori in ordine di grandezza e parte dal punto giusto, come fa l'indice di PostgreSQL.</li>
+          <li>«Fatturato mese per mese» c'è due volte. Nella prima riga la somma si calcola al momento. Nella seconda ognuno legge una risposta tenuta pronta: SinapsiDB un circuito, aggiornato dalla stessa scrittura che registra la fattura; PostgreSQL una vista materializzata, che va rinfrescata quando i dati cambiano; Redis la sua copia. Chi dei tre legge più in fretta lo dicono la tabella e il riquadro «Con la risposta pronta»; chi dei tre non può restare indietro rispetto ai dati è solo il primo, e questo la tabella non lo misura. Questa seconda riga non entra nel conteggio di chi è più rapido: lì nessuno calcola niente.</li>
+          <li>I due girano sulla stessa macchina, nello stesso momento. I tempi cambiano un poco da un lancio all'altro.</li>
+        </ul>
+        <details><summary>Tabella completa, con il tempo medio, il 99° percentile, l'SQL e il comando di Redis di ogni domanda</summary><div id="tabella-dettaglio"></div></details>
+      </section>
+    </section>
+
+    <p class="vuoto-tabella" id="senza-risultati" hidden></p>
+  </main>
+</div>
+</body>
+</html>

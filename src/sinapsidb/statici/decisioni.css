@@ -1,0 +1,55 @@
+/* Pagina delle decisioni: usa i colori di portale.css e i comandi di confronto.css. */
+.avviso[hidden] { display: none; }
+.avviso { border: 1px solid var(--critico); border-radius: 10px; padding: 8px 12px; margin: 14px 0 0; background: var(--superficie); }
+
+.modulo { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; margin-top: 12px; }
+.modulo label { color: var(--testo-2); font-size: 13px; margin-top: 6px; }
+.modulo .facoltativo { color: var(--muto); }
+.modulo input {
+  font: inherit; color: var(--testo); background: var(--superficie); border: 1px solid var(--bordo); border-radius: 8px;
+  padding: 7px 10px; min-width: 0; max-width: 26rem;
+}
+.modulo input:focus-visible, .decisione button:focus-visible, .riesame input:focus-visible { outline: 2px solid var(--serie-1); outline-offset: 2px; }
+.comandi.separati { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--griglia); }
+#nota-esempio { margin: 8px 0 0; }
+
+.esito-scrittura:empty { display: none; }
+.esito-scrittura { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--bordo); border-radius: 10px; background: var(--lavaggio); }
+.esito-scrittura p { margin: 0; display: flex; gap: 8px; align-items: flex-start; }
+.esito-scrittura p + p { margin-top: 4px; color: var(--testo-2); font-size: 13px; }
+.esito-scrittura .icona { margin-top: 3px; }
+
+#clienti td.num { font-size: 15px; font-weight: 600; }
+#clienti .vuoto, #decisioni .vuoto { color: var(--testo-2); margin: 12px 0 0; }
+#sotto { margin-top: 14px; }
+
+/* una decisione: la riga con l'esito, quello che ha letto, e i suoi comandi */
+.decisione { border-top: 1px solid var(--griglia); padding: 12px 0; }
+.decisione:first-child { border-top: 0; }
+.decisione .capo { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+.decisione .frase { font-weight: 600; overflow-wrap: anywhere; }
+.decisione .quando { color: var(--muto); font-size: 12px; white-space: nowrap; }
+.decisione .letto { margin: 4px 0 0; color: var(--testo-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.decisione .azioni { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.decisione button, .riesame button {
+  font: inherit; font-size: 13px; border-radius: 8px; padding: 5px 11px; cursor: pointer;
+  color: var(--testo); background: var(--superficie); border: 1px solid var(--bordo);
+}
+.decisione button:hover, .riesame button:hover { background: var(--lavaggio); }
+.decisione button:disabled { opacity: 0.5; cursor: default; }
+.riesame button.primario { color: var(--su-bottone); background: var(--bottone); border-color: var(--bottone); font-weight: 600; }
+
+.segno { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 2px 9px 2px 6px; border: 1px solid var(--bordo); white-space: nowrap; }
+
+.riesame, .risposta { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--bordo); border-radius: 10px; background: var(--lavaggio); }
+.riesame p, .risposta p { margin: 0 0 6px; }
+.riesame ul { list-style: none; margin: 6px 0 10px; padding: 0; }
+.riesame li { padding: 2px 0; }
+.riesame label { display: inline-flex; gap: 8px; align-items: baseline; cursor: pointer; }
+.risposta dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 6px 0; }
+.risposta dt { color: var(--testo-2); }
+.risposta dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.risposta .conclusione { font-weight: 600; display: flex; gap: 8px; align-items: flex-start; }
+.risposta .conclusione .icona { margin-top: 3px; }
+.risposta .piccolo { color: var(--testo-2); font-size: 13px; margin: 6px 0 0; }
+.risposta ul { margin: 4px 0 0; padding-left: 20px; }

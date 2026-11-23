@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SinapsiDB Dati</title>
+<link rel="icon" type="image/svg+xml" href="/icona.svg">
+<link rel="stylesheet" href="/portale.css">
+<link rel="stylesheet" href="/dati.css">
+<script src="/tema.js" defer></script>
+<script src="/dati.js" defer></script>
+</head>
+<body>
+<div class="viz-root">
+  <header class="testata">
+    <div class="marchio">
+      <img src="/icona.svg" width="40" height="40" alt="">
+      <div>
+        <h1>SinapsiDB <span class="sottile">dati</span></h1>
+        <p class="secondario" id="sottotitolo">La rete di neuroni e sinapsi memorizzata · caricamento…</p>
+      </div>
+    </div>
+    <nav class="sezioni" aria-label="Sezioni del portale">
+      <a href="/dati" aria-current="page">Dati</a>
+      <a href="/confronto">Confronto</a>
+      <a href="/decisioni">Decisioni</a>
+    </nav>
+  </header>
+
+  <p class="avviso" id="avviso" role="status" hidden></p>
+
+  <nav class="filtri" aria-label="Viste dei dati">
+    <div class="segmenti" role="tablist" aria-label="Viste dei dati">
+      <button type="button" role="tab" id="tab-rete" aria-controls="vista-rete" aria-selected="true">Rete</button>
+      <button type="button" role="tab" id="tab-diario" aria-controls="vista-diario" aria-selected="false" tabindex="-1">Diario</button>
+      <button type="button" role="tab" id="tab-domanda" aria-controls="vista-domanda" aria-selected="false" tabindex="-1">Domanda</button>
+    </div>
+    <button type="button" class="tema" id="tema">Tema</button>
+  </nav>
+
+  <main>
+    <section id="vista-rete" role="tabpanel" aria-labelledby="tab-rete">
+      <p class="guida">Si parte da un neurone e si cammina. Tocca un nodo della mappa, o un nome nella scheda, per spostarti lì.</p>
+      <div class="rete">
+        <aside class="scheda ingressi">
+          <label for="cerca">Cerca un neurone</label>
+          <input id="cerca" type="search" autocomplete="off" placeholder="Greta, Polonia, ordine 417">
+          <ul id="elenco"></ul>
+        </aside>
+        <div class="scheda">
+          <div class="mappa-testa">
+            <h2 id="mappa-titolo"></h2>
+            <label class="spunta" for="passato"><input type="checkbox" id="passato"> Mostra anche il passato</label>
+          </div>
+          <div class="mappa" id="mappa"></div>
+          <div class="legenda" id="legenda"></div>
+        </div>
+        <article class="scheda" id="scheda-neurone" aria-live="polite"></article>
+      </div>
+    </section>
+
+    <section id="vista-diario" role="tabpanel" aria-labelledby="tab-diario" hidden>
+      <p class="guida">Ogni cosa detta al database è un evento: la frase originale, chi l'ha detta e che cosa ha cambiato nella rete. Dal più recente.</p>
+      <ol id="diario" class="diario"></ol>
+    </section>
+
+    <section id="vista-domanda" role="tabpanel" aria-labelledby="tab-domanda" hidden>
+      <p class="guida">Come la rete risponde a una domanda: si accendono i neuroni nominati e l'attivazione segue le sinapsi.</p>
+      <div class="domanda" id="domanda-corpo">
+        <div class="scheda">
+          <h2 id="domanda-testo"></h2>
+          <ol id="passi" class="passi"></ol>
+          <div class="comandi">
+            <button type="button" id="avanti" class="primario">Passo successivo</button>
+            <button type="button" id="daccapo">Ricomincia</button>
+          </div>
+          <p id="conteggio" class="secondario"></p>
+          <div id="risposta" class="risposta" hidden></div>
+          <p class="secondario">Il tempo impiegato comparirà qui quando il motore esisterà. Oggi non c'è niente da misurare.</p>
+        </div>
+        <div class="scheda"><div class="mappa" id="mappa-domanda"></div></div>
+      </div>
+      <p class="vuoto-tabella" id="domanda-vuota" hidden>Nessuna domanda registrata.</p>
+    </section>
+  </main>
+</div>
+</body>
+</html>

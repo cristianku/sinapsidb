@@ -1,0 +1,71 @@
+{
+  "esempio": true,
+  "partenza": "greta",
+  "neuroni": {
+    "greta": {"nome": "Greta", "tipo": "persona", "forma": "cosa"},
+    "polonia": {"nome": "Polonia", "tipo": "luogo", "forma": "cosa"},
+    "volare": {"nome": "volare", "tipo": "azione", "forma": "cosa"},
+    "d2211": {"nome": "22 novembre", "tipo": "data", "forma": "valore"},
+    "f_volo": {"nome": "volare", "tipo": "fatto", "forma": "fatto"},
+    "rossi": {"nome": "Rossi", "tipo": "persona", "forma": "cosa"},
+    "azienda": {"nome": "azienda di Rossi", "tipo": "azienda", "forma": "cosa"},
+    "ordinare": {"nome": "ordinare", "tipo": "azione", "forma": "cosa"},
+    "f_ordine": {"nome": "ordinare", "tipo": "fatto", "forma": "fatto"},
+    "ordine417": {"nome": "ordine 417", "tipo": "ordine", "forma": "cosa"},
+    "ordine": {"nome": "ordine", "tipo": "tipo di cosa", "forma": "cosa"},
+    "pickup": {"nome": "pickup", "tipo": "articolo", "forma": "cosa"},
+    "n2": {"nome": "2", "tipo": "numero", "forma": "valore"},
+    "n3": {"nome": "3", "tipo": "numero", "forma": "valore"},
+    "awg42": {"nome": "42 AWG", "tipo": "misura", "forma": "valore"},
+    "confermato": {"nome": "confermato", "tipo": "stato", "forma": "cosa"},
+    "regola1": {
+      "nome": "almeno un articolo",
+      "tipo": "regola",
+      "forma": "regola",
+      "regola": {
+        "soglia": 2,
+        "su": "ordine417",
+        "ingressi": [
+          {"nome": "l'ordine è confermato", "peso": 1, "attivo": true},
+          {"nome": "l'ordine non ha articoli", "peso": 1, "attivo": false}
+        ]
+      }
+    }
+  },
+  "sinapsi": [
+    {"id": "s1", "da": "regola1", "ruolo": "riguarda", "a": "ordine", "nato": "e1"},
+    {"id": "s2", "da": "f_ordine", "ruolo": "chi", "a": "rossi", "nato": "e2"},
+    {"id": "s3", "da": "f_ordine", "ruolo": "azione", "a": "ordinare", "nato": "e2"},
+    {"id": "s4", "da": "f_ordine", "ruolo": "cosa", "a": "ordine417", "nato": "e2"},
+    {"id": "s5", "da": "ordine417", "ruolo": "è un", "a": "ordine", "nato": "e2"},
+    {"id": "s6", "da": "ordine417", "ruolo": "articolo", "a": "pickup", "nato": "e2"},
+    {"id": "s7", "da": "ordine417", "ruolo": "quantità", "a": "n2", "nato": "e2", "morto": "e3"},
+    {"id": "s8", "da": "ordine417", "ruolo": "fattura intestata a", "a": "azienda", "nato": "e2"},
+    {"id": "s9", "da": "azienda", "ruolo": "azienda di", "a": "rossi", "nato": "e2"},
+    {"id": "s10", "da": "ordine417", "ruolo": "quantità", "a": "n3", "nato": "e3"},
+    {"id": "s11", "da": "ordine417", "ruolo": "filo per l'avvolgimento", "a": "awg42", "nato": "e4"},
+    {"id": "s12", "da": "ordine417", "ruolo": "stato", "a": "confermato", "nato": "e5"},
+    {"id": "s13", "da": "f_volo", "ruolo": "chi", "a": "greta", "nato": "e6"},
+    {"id": "s14", "da": "f_volo", "ruolo": "azione", "a": "volare", "nato": "e6"},
+    {"id": "s15", "da": "f_volo", "ruolo": "verso", "a": "polonia", "nato": "e6"},
+    {"id": "s16", "da": "f_volo", "ruolo": "quando", "a": "d2211", "nato": "e6"}
+  ],
+  "eventi": [
+    {"id": "e1", "frase": "Un ordine confermato deve contenere almeno un articolo", "origine": "Nora"},
+    {"id": "e2", "frase": "Rossi ha ordinato due pickup e vuole la fattura intestata alla sua azienda", "origine": "Nora"},
+    {"id": "e3", "frase": "Porta a tre i pickup dell'ordine 417", "origine": "Nora"},
+    {"id": "e4", "frase": "Per l'avvolgimento vuole il filo da 42 AWG", "origine": "Nora"},
+    {"id": "e5", "frase": "Conferma l'ordine 417", "origine": "il sito"},
+    {"id": "e6", "frase": "Greta il 22 novembre è volata verso la Polonia", "origine": "ChatGPT"}
+  ],
+  "domanda": {
+    "testo": "Chi è volato in Polonia?",
+    "centro": "f_volo",
+    "passi": [
+      {"testo": "Trovo i neuroni «Polonia» e «volare» cercandoli per nome.", "nodi": ["polonia", "volare"], "archi": []},
+      {"testo": "Da Polonia seguo le sinapsi «verso», da volare le sinapsi «azione»: hanno un solo fatto in comune.", "nodi": ["polonia", "volare", "f_volo"], "archi": ["s15", "s14"]},
+      {"testo": "Dal fatto seguo la sinapsi «chi» e arrivo a Greta.", "nodi": ["polonia", "volare", "f_volo", "greta"], "archi": ["s15", "s14", "s13"]}
+    ],
+    "risposta": {"testo": "Greta", "evento": "e6"}
+  }
+}
